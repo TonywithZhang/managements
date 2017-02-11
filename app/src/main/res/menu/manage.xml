@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/all_project"
+            android:title="所有项目"
+            android:icon="@drawable/ic_bookmark_border_pink_600_24dp"/>
+        <item android:id="@+id/manage_project"
+            android:title="管理项目"
+            android:icon="@drawable/ic_send_pink_a400_24dp"/>
+        <item android:id="@+id/mytask"
+            android:title="我的任务"
+            android:icon="@drawable/ic_exit_to_app_white_24dp"
+            />
+        <item android:id="@+id/seek_for"
+            android:title="查找项目"
+            android:icon="@drawable/ic_search_cyan_800_24dp"
+            />
+        <item android:id="@+id/others"
+            android:title="其他功能"
+            android:icon="@drawable/ic_loyalty_green_600_24dp"
+            />
+    </group>
+
+</menu>
