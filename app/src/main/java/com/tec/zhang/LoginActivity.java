@@ -10,6 +10,7 @@ import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -55,6 +56,10 @@ public class LoginActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setLogo(R.drawable.ic_account_box_pink_800_48dp);
+        actionBar.setDisplayUseLogoEnabled(true);
         checkBox = (CheckBox) findViewById(R.id.checkBox);
         userName = (EditText) findViewById(R.id.editText);
         password = (EditText) findViewById(R.id.editText2);
@@ -79,6 +84,7 @@ public class LoginActivity extends BaseActivity {
     private void autoFillBlank() {
         try {
             AccountData ad = DataSupport.findLast(AccountData.class);
+            if (ad == null ) return ;
             if (ad.getRemember()){
                 userName.setText(ad.getName());
                 password.setText(ad.getPassword());

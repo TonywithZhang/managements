@@ -27,7 +27,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".LoginActivity"
+            android:label="@string/login"
+            android:logo="@drawable/ic_account_box_pink_800_48dp"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
+            />
         <activity android:name=".Transaction"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             />
