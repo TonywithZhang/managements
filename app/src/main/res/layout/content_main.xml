@@ -9,41 +9,56 @@
     android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <LinearLayout
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:orientation="vertical"
         android:fitsSystemWindows="true"
         android:layout_height="match_parent">
-        <android.support.v7.widget.Toolbar
+        <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
             android:fitsSystemWindows="true"
-            android:popupTheme="@style/AppTheme.AppBarOverlay"
-            android:background="@color/colorPrimary"
-            android:id="@+id/toolbar"
-            />
-        <FrameLayout
-            android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <android.support.v4.widget.SwipeRefreshLayout
+            <android.support.design.widget.CollapsingToolbarLayout
                 android:layout_width="match_parent"
-                android:id="@+id/srl"
-                android:layout_height="wrap_content">
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recyclerView"
+                android:fitsSystemWindows="true"
+                android:layout_height="match_parent">
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
-            </android.support.v4.widget.SwipeRefreshLayout>
-            <ProgressBar
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/pro"
-                android:padding="@dimen/fab_margin"
-                android:visibility="gone"
-                />
-        </FrameLayout>
+                    android:orientation="vertical"
+                    android:fitsSystemWindows="true"
+                    android:layout_height="match_parent">
+                    <android.support.v7.widget.Toolbar
+                        android:layout_width="match_parent"
+                        android:layout_height="?attr/actionBarSize"
+                        android:fitsSystemWindows="true"
+                        android:popupTheme="@style/AppTheme.AppBarOverlay"
+                        android:background="@color/colorPrimary"
+                        android:id="@+id/toolbar"
+                        />
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                        <android.support.v4.widget.SwipeRefreshLayout
+                            android:layout_width="match_parent"
+                            android:id="@+id/srl"
+                            android:layout_height="wrap_content">
+                            <android.support.v7.widget.RecyclerView
+                                android:id="@+id/recyclerView"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"/>
+                        </android.support.v4.widget.SwipeRefreshLayout>
+                        <ProgressBar
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/pro"
+                            android:padding="@dimen/fab_margin"
+                            android:visibility="gone"
+                            />
+                    </FrameLayout>
 
-    </LinearLayout>
+                </LinearLayout>
+            </android.support.design.widget.CollapsingToolbarLayout>
+        </android.support.design.widget.AppBarLayout>
+    </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.NavigationView
         android:layout_width="wrap_content"
