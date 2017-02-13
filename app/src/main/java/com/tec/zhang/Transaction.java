@@ -1,8 +1,17 @@
 package com.tec.zhang;
 
+import android.annotation.TargetApi;
+import android.content.ContentUris;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -22,6 +31,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tec.zhang.adapter.ItemAdapter;
@@ -37,6 +47,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -50,6 +61,9 @@ public class Transaction extends BaseActivity
     private NavigationView navi;
     private RecyclerView recycler;
     private ItemAdapter adapter;
+    private TextView engineerName;
+    private TextView engineerJob;
+    private CircleImageView engineerPicture;
     private SwipeRefreshLayout srl;
     private ProgressBar progressBar;
     private List<ProjItem> datas=new ArrayList<>();
@@ -73,9 +87,42 @@ public class Transaction extends BaseActivity
             actionBar.setHomeButtonEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_list_white_24dp);
         }
+        /**
+         *
+        engineerName = (TextView) findViewById(R.id.engineer_name);
+        Log.d(TAG, "账户名是" + getIntent().getStringExtra("name"));
+        if (engineerName != null) {
+            engineerName.setText(getIntent().getStringExtra("name"));
+        }else {
+            Log.d(TAG, "onCreate: 姓名栏变量为空");
+        }
+        engineerJob = (TextView) findViewById(R.id.engineer_job);
+        engineerPicture = (CircleImageView) findViewById(R.id.engineer_picture);
+        engineerPicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent pickPicture = new Intent(Intent.ACTION_VIEW);
+                pickPicture.setType("image/*");
+                startActivityForResult(pickPicture,0x0001);
+            }
+        });*/
         navi = (NavigationView) findViewById(R.id.nav_view);
         navi.setCheckedItem(R.id.all_project);
         navi.setNavigationItemSelectedListener(this);
+        View header = navi.getHeaderView(0);
+        //View header = navi.inflateHeaderView(R.layout.nav_header_main);
+        engineerName = (TextView) header.findViewById(R.id.engineer_name);
+        engineerName.setText(getIntent().getStringExtra("name"));
+        engineerJob = (TextView) header.findViewById(R.id.engineer_job);
+        engineerPicture = (CircleImageView) header.findViewById(R.id.engineer_picture);
+        engineerPicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent pickPicture = new Intent("android.intent.action.GET_CONTENT");
+                pickPicture.setType("image/*");
+                startActivityForResult(pickPicture,0x0001);
+            }
+        });
         new CheckAll().execute();
         recycler = (RecyclerView) findViewById(R.id.recyclerView);
         adapter = new ItemAdapter(datas,Transaction.this);
@@ -104,6 +151,7 @@ public class Transaction extends BaseActivity
                 Toast.makeText(Transaction.this, "刷新成功", Toast.LENGTH_SHORT).show();
             }
         });
+        new CheckAll().execute();
     }
 
     /**private void innitdatas() {
@@ -209,6 +257,72 @@ public class Transaction extends BaseActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch(requestCode){
+            case 0x0001:
+                if (resultCode == RESULT_OK) {
+                    if (Build.VERSION.SDK_INT>=19){
+                        handleImageAfterKitkat(data);
+                    }else{
+                        handleImageBeforeKitkat(data);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void handleImageBeforeKitkat(Intent data) {
+        Uri uri = data.getData();
+        String imagePath = getImagePath(uri,null);
+        displayImage(imagePath);
+    }
+
+    @TargetApi(19)
+    private void handleImageAfterKitkat(Intent data) {
+        String imagePath = null;
+        Uri uri = data.getData();
+        if (DocumentsContract.isDocumentUri(this,uri)){
+            String docId = DocumentsContract.getDocumentId(uri);
+            if ("com.android.providers.media.documents".equals(uri.getAuthority())){
+                String id = docId.split(":")[1];
+                String selection = MediaStore.Images.Media._ID + "=" + id;
+                imagePath = getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,selection);
+            }else if ("com.android.providers.downloads.documents".equals(uri.getAuthority())){
+                Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"),Long.valueOf(docId));
+                imagePath = getImagePath(contentUri,null);
+            }
+        }else if ("content".equalsIgnoreCase(uri.getScheme())){
+            imagePath = getImagePath(uri,null);
+        }else if ("file".equalsIgnoreCase(uri.getScheme())){
+            imagePath = uri.getPath();
+        }
+        displayImage(imagePath);
+    }
+
+    private void displayImage(String imagePath) {
+        if (imagePath !=null){
+            Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+            engineerPicture.setImageBitmap(bitmap);
+        }
+        else {
+            Toast.makeText(this, "发生错误", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private String getImagePath(Uri externalContentUri, String selection) {
+        String path = null;
+        Cursor cursor = getContentResolver().query(externalContentUri,null,selection,null,null);
+        if (cursor !=null && cursor.moveToFirst()){
+            path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            cursor.close();
+        }
+        return path;
+    }
+
     private class CheckAll extends AsyncTask<Void,Void,Void>{
 
         @Override

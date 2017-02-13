@@ -45,6 +45,7 @@ public class LoginActivity extends BaseActivity {
     private EditText password;
     private TextView notice;
     private CheckBox checkBox;
+    private String realName;
     private FloatingActionButton login;
     private ProgressBar progressBar;
     private String[] permission = new String[]{
@@ -181,6 +182,7 @@ public class LoginActivity extends BaseActivity {
                             ad.setRemember(checkBox.isChecked());
                             ad.setAccountRight(Integer.parseInt(jo.getString("right")));
                             ad.setRealName(jo.getString("realName"));
+                            realName = jo.getString("realName");
                             ad.save();
                             loginResult[0] = true;
                         }
@@ -202,6 +204,7 @@ public class LoginActivity extends BaseActivity {
                 progressBar.setVisibility(View.GONE);
                 notice.setText("登录成功٩(๑^o^๑)۶");
                 Intent intent = new Intent(LoginActivity.this,Transaction.class);
+                intent.putExtra("name",realName);
                 startActivity(intent);
             }else{
                 progressBar.setVisibility(View.GONE);
