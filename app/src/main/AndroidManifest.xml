@@ -32,7 +32,7 @@
         <activity android:name=".LoginActivity"
             android:label="@string/login"
             android:logo="@drawable/ic_account_box_pink_800_48dp"
-            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
+            android:theme="@style/AppTheme.AnimationTheme"
             />
         <activity android:name=".Transaction"
             android:theme="@style/AppTheme.MyownStyle"

@@ -9,9 +9,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -27,20 +27,20 @@ import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-
+import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
-import org.litepal.tablemanager.Connector;
-
+import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
-
 import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 public class LoginActivity extends BaseActivity {
     private OkHttpClient client = new OkHttpClient();
-    private CircleImageView Header;
+    private CircleImageView header;
     private EditText userName;
     private EditText password;
     private TextView notice;
@@ -61,6 +61,7 @@ public class LoginActivity extends BaseActivity {
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setLogo(R.drawable.ic_account_box_pink_800_48dp);
         actionBar.setDisplayUseLogoEnabled(true);
+        header = (CircleImageView) findViewById(R.id.circleImageView);
         checkBox = (CheckBox) findViewById(R.id.checkBox);
         userName = (EditText) findViewById(R.id.editText);
         password = (EditText) findViewById(R.id.editText2);
@@ -90,6 +91,9 @@ public class LoginActivity extends BaseActivity {
                 userName.setText(ad.getName());
                 password.setText(ad.getPassword());
                 checkBox.setChecked(true);
+            }
+            if (ad.getHeadImange() != null){
+                Picasso.with(this).load(new File(ad.getHeadImange())).fit().into(header);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -176,14 +180,19 @@ public class LoginActivity extends BaseActivity {
                         JSONObject jo= new JSONObject(URLDecoder.decode(response.body().string(),"GBK"));
                         if (jo.getString("state").equals("1")){
                             Log.d(TAG, jo.getString("realName")+"登录成功");
-                            AccountData ad = new AccountData();
-                            ad.setName(account);
-                            ad.setPassword(pass);
-                            ad.setRemember(checkBox.isChecked());
-                            ad.setAccountRight(Integer.parseInt(jo.getString("right")));
-                            ad.setRealName(jo.getString("realName"));
-                            realName = jo.getString("realName");
-                            ad.save();
+                            AccountData lastOne = DataSupport.findLast(AccountData.class);
+                            if (!(lastOne.getName().equals(account)&&lastOne.getPassword().
+                                    equals(pass)&&lastOne.
+                                    getAccountRight() == Integer.parseInt(jo.getString("right") ))){
+                                AccountData ad = new AccountData();
+                                ad.setName(account);
+                                ad.setPassword(pass);
+                                ad.setRemember(checkBox.isChecked());
+                                ad.setAccountRight(Integer.parseInt(jo.getString("right")));
+                                ad.setRealName(jo.getString("realName"));
+                                realName = jo.getString("realName");
+                                ad.save();
+                            }
                             loginResult[0] = true;
                         }
                     } catch (JSONException e) {
@@ -203,14 +212,16 @@ public class LoginActivity extends BaseActivity {
             if (aBoolean) {
                 progressBar.setVisibility(View.GONE);
                 notice.setText("登录成功٩(๑^o^๑)۶");
-                Intent intent = new Intent(LoginActivity.this,Transaction.class);
-                intent.putExtra("name",realName);
-                startActivity(intent);
+                ActivityOptionsCompat compat = ActivityOptionsCompat.makeScaleUpAnimation(login,login.getWidth()/2,login.getHeight()/2,0,0);
+                ActivityCompat.startActivity(LoginActivity.this,new Intent(LoginActivity.this,Transaction.class),compat.toBundle());
+                //Intent intent = new Intent(LoginActivity.this,Transaction.class);
+                //startActivity(intent);
             }else{
                 progressBar.setVisibility(View.GONE);
                 notice.setText("登录失败，用户名或者密码错误，或者服务器大姨妈来了");
             }
         }
     }
+
 }
 

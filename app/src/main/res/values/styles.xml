@@ -18,4 +18,6 @@
     <style name="AppTheme.MyownStyle" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
+    <style name="AppTheme.AnimationTheme" parent="Theme.AppCompat.DayNight.DarkActionBar"/>
+
 </resources>

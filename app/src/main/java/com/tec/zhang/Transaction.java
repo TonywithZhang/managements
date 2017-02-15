@@ -34,6 +34,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
 import com.tec.zhang.adapter.ItemAdapter;
 import com.tec.zhang.adapter.ProjItem;
 
@@ -42,6 +43,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -50,8 +52,11 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class Transaction extends BaseActivity
@@ -75,6 +80,17 @@ public class Transaction extends BaseActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_main);
+        navi = (NavigationView) findViewById(R.id.nav_view);
+        View header = navi.getHeaderView(0);
+        engineerName = (TextView) header.findViewById(R.id.engineer_name);
+        engineerName.setText(DataSupport.findLast(AccountData.class).getRealName());
+        engineerJob = (TextView) header.findViewById(R.id.engineer_job);
+        String headImage = DataSupport.findLast(AccountData.class).getHeadImange();
+        engineerPicture = (CircleImageView) header.findViewById(R.id.engineer_picture);
+
+        if (headImage != null){
+            Picasso.with(this).load(new File(headImage)).fit().into(engineerPicture);
+        }
         //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN,
         // WindowManager.LayoutParams.FLAG_FULLSCREEN);
         drawer = (DrawerLayout) findViewById(R.id.drawer);
@@ -87,34 +103,8 @@ public class Transaction extends BaseActivity
             actionBar.setHomeButtonEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_list_white_24dp);
         }
-        /**
-         *
-        engineerName = (TextView) findViewById(R.id.engineer_name);
-        Log.d(TAG, "账户名是" + getIntent().getStringExtra("name"));
-        if (engineerName != null) {
-            engineerName.setText(getIntent().getStringExtra("name"));
-        }else {
-            Log.d(TAG, "onCreate: 姓名栏变量为空");
-        }
-        engineerJob = (TextView) findViewById(R.id.engineer_job);
-        engineerPicture = (CircleImageView) findViewById(R.id.engineer_picture);
-        engineerPicture.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent pickPicture = new Intent(Intent.ACTION_VIEW);
-                pickPicture.setType("image/*");
-                startActivityForResult(pickPicture,0x0001);
-            }
-        });*/
-        navi = (NavigationView) findViewById(R.id.nav_view);
         navi.setCheckedItem(R.id.all_project);
         navi.setNavigationItemSelectedListener(this);
-        View header = navi.getHeaderView(0);
-        //View header = navi.inflateHeaderView(R.layout.nav_header_main);
-        engineerName = (TextView) header.findViewById(R.id.engineer_name);
-        engineerName.setText(getIntent().getStringExtra("name"));
-        engineerJob = (TextView) header.findViewById(R.id.engineer_job);
-        engineerPicture = (CircleImageView) header.findViewById(R.id.engineer_picture);
         engineerPicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -123,7 +113,7 @@ public class Transaction extends BaseActivity
                 startActivityForResult(pickPicture,0x0001);
             }
         });
-        new CheckAll().execute();
+        //new CheckAll().execute();
         recycler = (RecyclerView) findViewById(R.id.recyclerView);
         adapter = new ItemAdapter(datas,Transaction.this);
         recycler.setAdapter(adapter);
@@ -305,8 +295,11 @@ public class Transaction extends BaseActivity
 
     private void displayImage(String imagePath) {
         if (imagePath !=null){
-            Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-            engineerPicture.setImageBitmap(bitmap);
+            AccountData ad = new AccountData();
+            ad.setHeadImange(imagePath);
+            ad.updateAll();
+            Picasso.with(this).load(new File(imagePath)).fit().into(engineerPicture);
+            new UploadImage(imagePath).start();
         }
         else {
             Toast.makeText(this, "发生错误", Toast.LENGTH_SHORT).show();
@@ -416,6 +409,39 @@ public class Transaction extends BaseActivity
             Intent intent = new Intent(Transaction.this,Projectdetails.class);
             intent.putExtras(bundle);
             startActivity(intent);
+        }
+    }
+    private class UploadImage extends Thread{
+        String imagePath;
+        public UploadImage(String imagePath){
+            this.imagePath = imagePath;
+        }
+        @Override
+        public void run() {
+            RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                    .addFormDataPart("userName",DataSupport.findLast(AccountData.class).getName())
+                    .addFormDataPart("headImage",imagePath,
+                            RequestBody.create(MediaType.parse("application/octet-string"),
+                                    new File(imagePath))).build();
+            Request request = new Request.Builder().url(BaseActivity.SERVER_ADDRESS +
+                    "uploadHeadImage").post(requestBody).build();
+            Call call = client.newCall(request);
+            call.enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(Transaction.this, "上传头像成功", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            });
         }
     }
 }

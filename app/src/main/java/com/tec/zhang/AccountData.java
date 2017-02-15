@@ -12,6 +12,16 @@ public class AccountData extends DataSupport {
     private Boolean remember;
     private int accountRight;
 
+    public String getHeadImange() {
+        return headImange;
+    }
+
+    public void setHeadImange(String headImange) {
+        this.headImange = headImange;
+    }
+
+    private String headImange;
+
     public String getRealName() {
         return realName;
     }
