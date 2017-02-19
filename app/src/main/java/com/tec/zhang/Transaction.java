@@ -87,7 +87,6 @@ public class Transaction extends BaseActivity
         engineerJob = (TextView) header.findViewById(R.id.engineer_job);
         String headImage = DataSupport.findLast(AccountData.class).getHeadImange();
         engineerPicture = (CircleImageView) header.findViewById(R.id.engineer_picture);
-
         if (headImage != null){
             Picasso.with(this).load(new File(headImage)).fit().into(engineerPicture);
         }
