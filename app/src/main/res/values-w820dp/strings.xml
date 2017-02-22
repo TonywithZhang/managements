@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="fill_in_number">请输入想要创建的检具编号：</string>
+    <string name="select_customer">选择客户名称</string>
+    <string name="gauge_number">检具编号</string>
+    <string name="fill_in_full_name">请输入检具全名：</string>
+    <string name="gauge_fullname">检具全名</string>
+    <string name="fill_in_project_name">请输入检具项目名</string>
+    <string name="project_name">检具项目名</string>
+    <string name="fill_in_project_master">请输入项目主管名字（不能出现错字）</string>
+    <string name="project_master">项目主管</string>
+</resources>

@@ -22,7 +22,7 @@ public class BaseActivity extends AppCompatActivity {
     private static final String NOTICE = "再点击一点推出本软件！";
     private FinishBroadcastReceiver mFinishBroadcastReceiver;
     private ServiceCheckReceiver receiver;
-    public static final String SERVER_ADDRESS = "http://192.168.1.103:8080/OkHttpDemo/";
+    public static final String SERVER_ADDRESS = "http://192.168.1.109:8080/OkHttpDemo/";
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

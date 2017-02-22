@@ -12,14 +12,31 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="请输入想要创建的检具编号："
+        android:id="@+id/select_company"
+        android:textColor="?attr/colorPrimaryDark"
+        android:textSize="@dimen/fab_icon_size"
+        android:text="@string/select_customer"/>
+    <android.support.v7.widget.AppCompatSpinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/select_company"
+        android:layout_marginTop="12sp"
+        android:theme="@android:style/ThemeOverlay.Material.Dark.ActionBar"
+        android:id="@+id/spinner1"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/fill_in_number"
         android:textColor="@color/colorPrimary"
+        android:layout_below="@+id/spinner1"
+        android:layout_marginTop="12sp"
         android:id="@+id/textView4" />
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="检具编号"
+        android:hint="@string/gauge_number"
         android:layout_below="@+id/textView4"
         android:layout_alignParentStart="true"
         android:layout_marginTop="12dp"
@@ -28,7 +45,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="请输入检具全名："
+        android:text="@string/fill_in_full_name"
         android:layout_below="@+id/editText3"
         android:layout_alignParentStart="true"
         android:layout_marginTop="12sp"
@@ -38,7 +55,7 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="检具全名"
+        android:hint="@string/gauge_fullname"
         android:layout_below="@+id/textView5"
         android:layout_alignParentStart="true"
         android:layout_marginTop="12dp"
@@ -47,7 +64,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="请输入检具项目名"
+        android:text="@string/fill_in_project_name"
         android:layout_below="@+id/editText4"
         android:layout_alignParentStart="true"
         android:layout_marginTop="12dp"
@@ -58,7 +75,7 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="检具项目名"
+        android:hint="@string/project_name"
         android:id="@+id/editText5"
         android:layout_below="@+id/textView6"
         android:layout_alignParentStart="true"
@@ -67,7 +84,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="请输入项目主管名字（不能出现错字）"
+        android:text="@string/fill_in_project_master"
         android:layout_below="@+id/editText5"
         android:layout_alignParentStart="true"
         android:layout_marginTop="12dp"
@@ -77,7 +94,7 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="项目主管"
+        android:hint="@string/project_master"
         android:layout_below="@+id/textView7"
         android:layout_alignParentStart="true"
         android:layout_marginTop="12dp"

@@ -8,7 +8,10 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.litepal.crud.DataSupport;
@@ -28,6 +31,8 @@ public class CreateSingleProject extends AppCompatActivity {
     private EditText managerName;
     private FloatingActionButton create;
     private OkHttpClient client;
+    private Spinner spinner;
+    private final String[] CUSTOMERS = {"弗吉亚","宝马","奔驰","大众","其他"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +41,24 @@ public class CreateSingleProject extends AppCompatActivity {
         gaugeFullName = (EditText) findViewById(R.id.editText4);
         gaugePro = (EditText) findViewById(R.id.editText5);
         managerName = (EditText) findViewById(R.id.editText6);
+        spinner = (Spinner) findViewById(R.id.spinner1);
+
+        ArrayAdapter list = new ArrayAdapter(this,R.layout.spinner_layout,CUSTOMERS);
+        spinner.setAdapter(list);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                switch (position){
+                    case 0:
+
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         create = (FloatingActionButton) findViewById(R.id.floatingActionButton2);
         create.setEnabled(false);
         AccountData me = DataSupport.findLast(AccountData.class);
@@ -69,10 +92,11 @@ public class CreateSingleProject extends AppCompatActivity {
                 String a = gaugeNum.getText().toString();
                 String b = gaugeFullName.getText().toString();
                 String c = gaugePro.getText().toString();
-                String d = getNameCode(managerName.getText().toString());
+                String d = Projectdetails.getNameCode(managerName.getText().toString());
+                String e = spinner.getSelectedItemPosition() + 1 + "";
                 Request request = new Request.Builder().get().url(BaseActivity.SERVER_ADDRESS +"insertProject?userName="
                 + name + "&projectNum=" + a + "&projectFullName=" + b + "&nameCode=" + d + 
-                        "&projectName=" + c
+                        "&projectName=" + c + "&comNum=" + e
                 ).build();
                 Call call = client.newCall(request);
                 call.enqueue(new Callback() {
@@ -140,6 +164,7 @@ public class CreateSingleProject extends AppCompatActivity {
         @Override
         public void afterTextChanged(Editable s) {}
     };
+    /**
     private String getNameCode(String na){
         switch (na){
             case "张庆德":
@@ -151,5 +176,5 @@ public class CreateSingleProject extends AppCompatActivity {
             default:return "3";
 
         }
-    }
+    }*/
 }

@@ -337,7 +337,23 @@ public class Transaction extends BaseActivity
                         for(int i = 0; i<ja.length(); i++){
                             JSONObject joo = ja.getJSONObject(i);
                             ProjItem pi = new ProjItem();
-                            pi.imageView = R.drawable.b;
+                            switch (joo.getInt("companyNum")){
+                                case 1:
+                                    pi.imageView = R.drawable.frecia;
+                                    break;
+                                case 2:
+                                    pi.imageView = R.drawable.bmw;
+                                    break;
+                                case 3:
+                                    pi.imageView = R.drawable.benz;
+                                    break;
+                                case 4:
+                                    pi.imageView = R.drawable.dazhong;
+                                    break;
+                                default:
+                                    pi.imageView = R.drawable.b;
+                                    break;
+                            }
                             pi.state = joo.getString("stateNow");
                             pi.fullNme = joo.getString("projName");
                             String s = joo.getString("attendNames");
