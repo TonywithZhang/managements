@@ -37,6 +37,7 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.tec.zhang.adapter.ItemAdapter;
 import com.tec.zhang.adapter.ProjItem;
+import com.tec.zhang.adapter.Separator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -117,7 +118,7 @@ public class Transaction extends BaseActivity
         adapter = new ItemAdapter(datas,Transaction.this);
         recycler.setAdapter(adapter);
         recycler.setItemAnimator(new DefaultItemAnimator());
-        recycler.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.HORIZONTAL));
+        recycler.addItemDecoration(new Separator(this,LinearLayoutManager.VERTICAL));
         recycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
         adapter.setOnClickListener(new ItemAdapter.OnItemClickListener(){
 

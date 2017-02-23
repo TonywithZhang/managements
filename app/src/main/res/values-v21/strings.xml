@@ -9,4 +9,5 @@
     <string name="project_name">检具项目名</string>
     <string name="fill_in_project_master">请输入项目主管名字（不能出现错字）</string>
     <string name="project_master">项目主管</string>
+    <string name="detail">检具详情</string>
 </resources>

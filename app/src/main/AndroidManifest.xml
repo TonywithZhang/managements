@@ -52,7 +52,9 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".Projectdetails" />
+        <activity android:name=".Projectdetails"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:label="@string/detail"/>
         <activity android:name=".CreateSingleProject" />
         <activity android:name=".PointingMaster" />
         <activity android:name=".SeekSingle" />
