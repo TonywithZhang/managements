@@ -14,6 +14,8 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -38,6 +40,8 @@ import com.squareup.picasso.Picasso;
 import com.tec.zhang.adapter.ItemAdapter;
 import com.tec.zhang.adapter.ProjItem;
 import com.tec.zhang.adapter.Separator;
+import com.tec.zhang.fragments.*;
+import com.tec.zhang.fragments.SeekSingle;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -65,9 +69,7 @@ public class Transaction extends BaseActivity
     private DrawerLayout drawer;
     private OkHttpClient client = new OkHttpClient();
     private NavigationView navi;
-    private RecyclerView recycler;
     private ItemAdapter adapter;
-    private TextView engineerName;
     private TextView engineerJob;
     private CircleImageView engineerPicture;
     private SwipeRefreshLayout srl;
@@ -83,7 +85,7 @@ public class Transaction extends BaseActivity
         setContentView(R.layout.content_main);
         navi = (NavigationView) findViewById(R.id.nav_view);
         View header = navi.getHeaderView(0);
-        engineerName = (TextView) header.findViewById(R.id.engineer_name);
+        TextView engineerName = (TextView) header.findViewById(R.id.engineer_name);
         engineerName.setText(DataSupport.findLast(AccountData.class).getRealName());
         engineerJob = (TextView) header.findViewById(R.id.engineer_job);
         String headImage = DataSupport.findLast(AccountData.class).getHeadImange();
@@ -114,7 +116,7 @@ public class Transaction extends BaseActivity
             }
         });
         //new CheckAll().execute();
-        recycler = (RecyclerView) findViewById(R.id.recyclerView);
+        RecyclerView recycler = (RecyclerView) findViewById(R.id.recyclerView);
         adapter = new ItemAdapter(datas,Transaction.this);
         recycler.setAdapter(adapter);
         recycler.setItemAnimator(new DefaultItemAnimator());
@@ -174,12 +176,7 @@ public class Transaction extends BaseActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -230,8 +227,13 @@ public class Transaction extends BaseActivity
                 break;
             case R.id.seek_for:
                 navi.setCheckedItem(R.id.seek_for);
-                Intent intent1 = new Intent(this,SeekSingle.class);
-                startActivity(intent1);
+                FragmentManager fm = getSupportFragmentManager();
+                FragmentTransaction ft = fm.beginTransaction();
+                ft.replace(R.id.fl,new SeekSingle());
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                ft.commit();
+                /*Intent intent1 = new Intent(this,SeekSingle.class);
+                startActivity(intent1);*/
                 break;
             case R.id.others:
                 navi.setCheckedItem(R.id.others);
