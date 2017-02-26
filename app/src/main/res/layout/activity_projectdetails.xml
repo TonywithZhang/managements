@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:id="@+id/coordinator"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context="com.tec.zhang.Projectdetails">
@@ -56,6 +57,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:id="@+id/buttonMenu"
+        app:layout_behavior="com.tec.zhang.util.ScrollingFABBehavior"
         app:fab_addButtonColorNormal="@color/colorAccent"
         app:fab_addButtonColorPressed="@color/cardview_light_background"
         app:fab_addButtonSize="normal"

@@ -1,20 +1,30 @@
 package com.tec.zhang;
 
+import android.animation.ObjectAnimator;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.os.Handler;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import org.litepal.crud.DataSupport;
 
@@ -43,6 +53,7 @@ public class Projectdetails extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
 
+        FloatingActionsMenu FABMenu = (FloatingActionsMenu) findViewById(R.id.buttonMenu);
         FloatingActionButton button = (FloatingActionButton) findViewById(R.id.fabs);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,6 +62,7 @@ public class Projectdetails extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+        /*final GestureDetectorCompat compat = new GestureDetectorCompat(this,new MyGestureListener(FABMenu));*/
         operation = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.operation);
         pause = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.pause);
         detail = (TextView) findViewById(R.id.text);
@@ -61,8 +73,12 @@ public class Projectdetails extends AppCompatActivity {
         String[] strings = null;
         String realTaskCode = null;
         try {
-            strings = a.split("状态码：");
-            taskCode = strings[strings.length - 1] ;
+            if (a != null) {
+                strings = a.split("状态码：");
+            }
+            if (strings != null) {
+                taskCode = strings[strings.length - 1] ;
+            }
             realTaskCode = taskCode;
             taskCode = (Integer.parseInt(taskCode)/5)*5 +"";
         } catch (NullPointerException e) {
@@ -466,4 +482,45 @@ public class Projectdetails extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         return super.onOptionsItemSelected(item);
     }
+/*    public class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+        private View view;
+        private int originalTop;
+        public MyGestureListener(View view){
+            this.view = view;
+            originalTop = view.getTop();
+        }
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            if (Math.abs(distanceY) > Math.abs(distanceX)){
+                int buttonTop = view.getTop();
+                int buttonBottom = view.getBottom();
+                boolean isScrollingDown = e1.getRawY() < e2.getRawY();
+                if (!ifNeedScroll(isScrollingDown)) return false;
+                if (isScrollingDown){
+                    view.setTop(buttonTop -(int)Math.abs(distanceY) );
+                    view.setBottom(buttonBottom - (int)Math.abs(distanceY));
+                }else {
+                    view.setTop(buttonTop +(int)Math.abs(distanceY) );
+                    view.setBottom(buttonBottom + (int)Math.abs(distanceY));
+                }
+            }
+            return super.onScroll(e1, e2, distanceX, distanceY);
+        }
+        public boolean ifNeedScroll(boolean isScrollingDown){
+            int nowTop = view.getTop();
+            if (isScrollingDown && nowTop <= originalTop) return false;
+            if (! isScrollingDown) return isInScreen(view);
+            return  true;
+        }
+        private boolean isInScreen(View view){
+            int width,height;
+            Point p = new Point();
+            getWindowManager().getDefaultDisplay().getSize(p);
+            width = p.x;
+            height = p.y;
+            Rect rect = new Rect(0,0,width,height);
+            if (! view.getLocalVisibleRect(rect)) return false;
+            return true;
+        }
+    }*/
 }
