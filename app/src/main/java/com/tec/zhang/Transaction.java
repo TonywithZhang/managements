@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
@@ -69,20 +70,28 @@ public class Transaction extends BaseActivity
     private DrawerLayout drawer;
     private OkHttpClient client = new OkHttpClient();
     private NavigationView navi;
-    private ItemAdapter adapter;
     private TextView engineerJob;
     private CircleImageView engineerPicture;
-    private SwipeRefreshLayout srl;
-    private ProgressBar progressBar;
-    private List<ProjItem> datas=new ArrayList<>();
     private static final String TAG= "Transaction";
-    private String projDetail;
-    private int  projectNum;
-    public String attendNames;
+    private AllProjects allProjects;
+    private com.tec.zhang.fragments.SeekSingle seekSingle;
+    private AddOneProduct addOneProduct;
+    private FragmentManager fm;
+    private FragmentTransaction ft;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_main);
+        fm = getSupportFragmentManager();
+        ft = fm.beginTransaction();
+        allProjects = new AllProjects();
+        seekSingle = new SeekSingle();
+        addOneProduct = new AddOneProduct();
+        if (!allProjects.isAdded()){
+            ft.add(R.id.fl,allProjects).commit();
+        }else {
+            ft.hide(seekSingle).show(allProjects).commit();
+        }
         navi = (NavigationView) findViewById(R.id.nav_view);
         View header = navi.getHeaderView(0);
         TextView engineerName = (TextView) header.findViewById(R.id.engineer_name);
@@ -93,12 +102,9 @@ public class Transaction extends BaseActivity
         if (headImage != null){
             Picasso.with(this).load(new File(headImage)).fit().into(engineerPicture);
         }
-        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN,
-        // WindowManager.LayoutParams.FLAG_FULLSCREEN);
         drawer = (DrawerLayout) findViewById(R.id.drawer);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        progressBar = (ProgressBar) findViewById(R.id.pro);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar!= null){
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -115,48 +121,7 @@ public class Transaction extends BaseActivity
                 startActivityForResult(pickPicture,0x0001);
             }
         });
-        //new CheckAll().execute();
-        RecyclerView recycler = (RecyclerView) findViewById(R.id.recyclerView);
-        adapter = new ItemAdapter(datas,Transaction.this);
-        recycler.setAdapter(adapter);
-        recycler.setItemAnimator(new DefaultItemAnimator());
-        recycler.addItemDecoration(new Separator(this,LinearLayoutManager.VERTICAL));
-        recycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
-        adapter.setOnClickListener(new ItemAdapter.OnItemClickListener(){
-
-            @Override
-            public void onClick(View v, int position) {
-                //int i = Integer.parseInt(datas.get(position).fullNme);
-                int i = Integer.parseInt(datas.get(position).fullNme.substring(0,5));
-                attendNames = datas.get(position).orderMan;
-                projectNum = i;
-                new ShowDetailItem().execute(i);
-            }
-        });
-        srl = (SwipeRefreshLayout) findViewById(R.id.srl);
-        srl.setColorSchemeColors(ContextCompat.getColor(Transaction.this,R.color.colorAccent));
-        srl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
-            @Override
-            public void onRefresh() {
-                new CheckAll().execute();
-                srl.setRefreshing(false);
-                Toast.makeText(Transaction.this, "刷新成功", Toast.LENGTH_SHORT).show();
-            }
-        });
-        new CheckAll().execute();
     }
-
-    /**private void innitdatas() {
-        Random random = new Random(System.currentTimeMillis());
-        for (int i = 0;i<100;i++){
-            ProjItem p = new ProjItem();
-            p.imageView = R.drawable.f;
-            p.fullNme = random.nextInt(800)+"";
-            p.orderMan = random.nextBoolean() + "";
-            p.state = random.nextFloat() + "";
-            datas.add(p);
-        }
-    }*/
 
     @Override
     public void onBackPressed() {
@@ -188,50 +153,49 @@ public class Transaction extends BaseActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        navi.setCheckedItem(item.getItemId());
-        switch(item.getItemId()){
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch(item.getItemId()){
             case R.id.all_project:
                 navi.setCheckedItem(R.id.all_project);
+                if (allProjects.isHidden()){
+                    reset();
+                    ft.hide(seekSingle).hide(addOneProduct).show(allProjects).commit();
+                }
+                allProjects.showAll();
                 break;
             case R.id.manage_project:
                 navi.setCheckedItem(R.id.manage_project);
-                Intent intent = new Intent(this,CreateSingleProject.class);
-                startActivity(intent);
+                reset();
+                if (addOneProduct.isAdded()){
+                    if (addOneProduct.isHidden()) {
+                        ft.hide(allProjects).hide(seekSingle).show(addOneProduct).commit();
+                    }
+                }else{
+                    ft.hide(allProjects).hide(seekSingle).add(R.id.fl,addOneProduct).commit();
+                }
+                /*Intent intent = new Intent(this,CreateSingleProject.class);
+                startActivity(intent);*/
                 break;
             case R.id.mytask:
                 navi.setCheckedItem(R.id.mytask);
-                AccountData me = DataSupport.findLast(AccountData.class);
-                String realName = me.getRealName();
-                List<ProjItem> myTasks = new ArrayList<>();
-                for (ProjItem items:datas){
-                    String[] names = items.orderMan.split("，");
-                    String responsibleMan = names[names.length - 1];
-                    if (realName.equals(responsibleMan)){
-                        myTasks.add(items);
-                    }
+                if (allProjects.isHidden()){
+                    reset();
+                    ft.hide(seekSingle).hide(addOneProduct).show(allProjects).commit();
                 }
-                if (myTasks.size() != 0) {
-                    Log.d(TAG, "onNavigationItemSelected: "+ myTasks.size());
-                    datas.clear();
-                    for (ProjItem items:myTasks){
-                        datas.add(items);
-                    }
-                    adapter.notifyDataSetChanged();
-                } else {
-                        Toast.makeText(this, "您的任务列表为空", Toast.LENGTH_SHORT).show();
-                }
+                allProjects.ownTasks();
                 //Intent intent = new Intent(this,MyTask.class);
                 //startActivity(intent);
                 break;
             case R.id.seek_for:
                 navi.setCheckedItem(R.id.seek_for);
-                FragmentManager fm = getSupportFragmentManager();
-                FragmentTransaction ft = fm.beginTransaction();
-                ft.replace(R.id.fl,new SeekSingle());
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.commit();
+                reset();
+                if (seekSingle.isAdded()){
+                    if (seekSingle.isHidden()) {
+                        ft.hide(allProjects).hide(addOneProduct).show(seekSingle).commit();
+                    }
+                }else {
+                    ft.hide(allProjects).hide(addOneProduct).add(R.id.fl,seekSingle).commit();
+                }
                 /*Intent intent1 = new Intent(this,SeekSingle.class);
                 startActivity(intent1);*/
                 break;
@@ -317,121 +281,9 @@ public class Transaction extends BaseActivity
         }
         return path;
     }
-
-    private class CheckAll extends AsyncTask<Void,Void,Void>{
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            Request request= new Request.Builder().get().url(BaseActivity.SERVER_ADDRESS
-                    + "seekForAll?userName=zhang&password=00000000").build();
-            Call call = client.newCall(request);
-            call.enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    e.printStackTrace();
-                }
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    String respond = URLDecoder.decode(response.body().string(),"GBK");
-                    datas.clear();
-                    try {
-                        JSONObject jo = new JSONObject(respond);
-                        JSONArray ja = jo .getJSONArray("alldatas");
-                        for(int i = 0; i<ja.length(); i++){
-                            JSONObject joo = ja.getJSONObject(i);
-                            ProjItem pi = new ProjItem();
-                            switch (joo.getInt("companyNum")){
-                                case 1:
-                                    pi.imageView = R.drawable.frecia;
-                                    break;
-                                case 2:
-                                    pi.imageView = R.drawable.bmw;
-                                    break;
-                                case 3:
-                                    pi.imageView = R.drawable.benz;
-                                    break;
-                                case 4:
-                                    pi.imageView = R.drawable.dazhong;
-                                    break;
-                                default:
-                                    pi.imageView = R.drawable.b;
-                                    break;
-                            }
-                            pi.state = joo.getString("stateNow");
-                            pi.fullNme = joo.getString("projName");
-                            String s = joo.getString("attendNames");
-                            pi.orderMan = s;
-                            datas.add(pi);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            Log.d(TAG, "onPostExecute: " + datas.size());
-            adapter.notifyDataSetChanged();
-        }
-    }
-    private class ShowDetailItem extends AsyncTask<Integer,Void,Boolean>{
-        @Override
-        protected void onPreExecute() {
-            progressBar.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected Boolean doInBackground(Integer... params) {
-            final Boolean[] state = {false};
-            Request request = new Request.Builder().get().url(BaseActivity.SERVER_ADDRESS
-                    + "checkProduct?projectNum=" + params[0]).build();
-            Call call = client.newCall(request);
-            call.enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    Log.d(TAG, "onFailure: 服务器无响应");
-                    e.printStackTrace();
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    String respond = response.body().string();
-                    final String s = URLDecoder.decode(respond,"GBK");
-                    projDetail = s;
-                    state[0] = true;
-                }
-            });
-            try {
-                Thread.sleep(1500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return state[0];
-        }
-
-        @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            progressBar.setVisibility(View.GONE);
-            Bundle bundle = new Bundle();
-            bundle.putCharSequence("pro",projDetail);
-            bundle.putInt("projectNum",projectNum);
-            bundle.putCharSequence("attendNames",attendNames);
-            Intent intent = new Intent(Transaction.this,Projectdetails.class);
-            intent.putExtras(bundle);
-            startActivity(intent);
-        }
-    }
     private class UploadImage extends Thread{
         String imagePath;
-        public UploadImage(String imagePath){
+        UploadImage(String imagePath){
             this.imagePath = imagePath;
         }
         @Override
@@ -461,5 +313,9 @@ public class Transaction extends BaseActivity
                 }
             });
         }
+    }
+    private void reset(){
+        ft = fm.beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
     }
 }

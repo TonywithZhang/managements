@@ -37,4 +37,5 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     compile 'com.getbase:floatingactionbutton:1.10.1'
     compile 'com.airbnb.android:lottie:1.0.3'
+    compile 'com.github.GrenderG:Toasty:1.1.3'
 }

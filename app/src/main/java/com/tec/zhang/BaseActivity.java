@@ -11,6 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import es.dmoral.toasty.Toasty;
+
 /**
  * Created by zqd on 2017/1/30.
  */
@@ -53,7 +55,7 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (System.currentTimeMillis() - currentTime >2000){
-            Toast.makeText(this, NOTICE, Toast.LENGTH_SHORT).show();
+            Toasty.warning(this,NOTICE,Toast.LENGTH_LONG).show();
             currentTime = System.currentTimeMillis();
         }else {
             finishThisActivity(this.getClass());
@@ -108,7 +110,7 @@ public class BaseActivity extends AppCompatActivity {
             if (!isServiceRunning()){
                 Intent i = new Intent (context,CheckNews.class);
                 context.startService(i);
-                Toast.makeText(context, "后台服务启动成功", Toast.LENGTH_SHORT).show();
+                Toasty.success(getApplication(),"后台服务启动成功",Toast.LENGTH_LONG).show();
             }
         }
     }

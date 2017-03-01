@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import java.io.IOException;
 
+import es.dmoral.toasty.Toasty;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -118,7 +119,7 @@ public class PointingMaster extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(PointingMaster.this, "对不起，执行失败", Toast.LENGTH_SHORT).show();
+                            Toasty.error(PointingMaster.this,"对不起，执行失败",Toast.LENGTH_LONG).show();
                         }
                     });
                 }

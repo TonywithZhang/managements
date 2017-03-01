@@ -30,6 +30,7 @@ import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
 
+import es.dmoral.toasty.Toasty;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -110,7 +111,7 @@ public class Projectdetails extends AppCompatActivity {
                     }).setCancelable(true);
                     notice.show();
                 } else {
-                    Toast.makeText(Projectdetails.this, "对不起，您无权限执行此操作", Toast.LENGTH_SHORT).show();
+                    Toasty.error(Projectdetails.this,"对不起，您无权限执行此操作",Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -121,7 +122,7 @@ public class Projectdetails extends AppCompatActivity {
                 if (right>=5) {
                     operateWithStateCode(Integer.parseInt(finalRealTaskCode));
                 }else{
-                    Toast.makeText(Projectdetails.this, "对不起，你无权限执行此操作", Toast.LENGTH_SHORT).show();
+                    Toasty.error(Projectdetails.this,"对不起，你无权限执行此操作",Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -222,10 +223,10 @@ public class Projectdetails extends AppCompatActivity {
                 export(projectNum);
                 break;
             case 255:
-                Toast.makeText(this, "该检具已出货，加入新功能请联系软件作者", Toast.LENGTH_SHORT).show();
+                Toasty.info(Projectdetails.this,"该检具已出货，加入新功能请联系软件作者",Toast.LENGTH_LONG).show();
                 break;
             default:
-                Toast.makeText(this, "发生未知错误，请联系软件作者", Toast.LENGTH_SHORT).show();
+                Toasty.error(Projectdetails.this,"发生未知错误，请联系软件作者",Toast.LENGTH_LONG).show();
         }
     }
     /**
@@ -349,7 +350,7 @@ public class Projectdetails extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(Projectdetails.this, "对不起，执行失败，请自行检查细节或通知软件作者", Toast.LENGTH_SHORT).show();
+                            Toasty.error(Projectdetails.this,"对不起，执行失败，请自行检查细节或通知软件作者",Toast.LENGTH_LONG).show();
                         }
                     });
                 }
@@ -409,7 +410,7 @@ public class Projectdetails extends AppCompatActivity {
                                 }
                             }).show();
                 }else{
-                    Toast.makeText(Projectdetails.this, "对不起，执行失败", Toast.LENGTH_SHORT).show();
+                    Toasty.error(Projectdetails.this,"对不起，执行失败",Toast.LENGTH_LONG).show();
                 }
             }
         });

@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.tec.zhang.BaseActivity;
 import com.tec.zhang.R;
@@ -21,6 +22,7 @@ import com.tec.zhang.SimpleDisplay;
 import java.io.IOException;
 import java.net.URLDecoder;
 
+import es.dmoral.toasty.Toasty;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -96,6 +98,7 @@ public class SeekSingle extends Fragment {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     e.printStackTrace();
+                    Toasty.error(getContext(),"查询失败", Toast.LENGTH_LONG).show();
                 }
 
                 @Override
