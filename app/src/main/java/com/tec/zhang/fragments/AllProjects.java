@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -115,8 +116,18 @@ public class AllProjects extends Fragment {
             @Override
             public void onRefresh() {
                 showAll();
-                srl.setRefreshing(false);
-                Toasty.success(getContext(),"刷新成功",Toast.LENGTH_LONG).show();
+                new CountDownTimer(1500,100){
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        srl.setRefreshing(false);
+                        Toasty.success(getContext(),"刷新成功",Toast.LENGTH_LONG).show();
+                    }
+                }.start();
             }
         });
         showAll();
