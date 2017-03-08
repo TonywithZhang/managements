@@ -85,6 +85,28 @@ public class AllProjects extends Fragment {
                 projectNum = i;
                 new ShowDetailItem().execute(i);
             }
+
+            @Override
+            public void onOrderManClick(TextView v, int position) {
+                Log.d(TAG, "onOrderManClick: 确实被点击了一次");
+                List<ProjItem> personalList = new ArrayList<>();
+                for (ProjItem item : datas){
+                    String[] names = item.orderMan.split("，");
+                    String responsibleMan = names[names.length - 1];
+                    if (responsibleMan.equals(v.getText().toString())){
+                        personalList.add(item);
+                    }
+                }
+                Log.d(TAG, "personalList长度是" + personalList.size());
+                if (personalList.size() != 0 ){
+                    datas.clear();
+                    for (ProjItem item : personalList){
+                        datas.add(item);
+                    }
+                    Log.d(TAG, "onOrderManClick: 任务执行了一次");
+                    adapter.notifyDataSetChanged();
+                }
+            }
         });
         srl = (SwipeRefreshLayout) view.findViewById(R.id.srl);
         srl.setColorSchemeColors(ContextCompat.getColor(getContext(),R.color.colorAccent));
@@ -185,7 +207,7 @@ public class AllProjects extends Fragment {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     String respond = response.body().string();
-                    projDetail = URLDecoder.decode(respond,"GBK");
+                    projDetail = URLDecoder.decode(respond,"GBK").replaceAll("null","暂无信息");
                     state[0] = true;
                 }
             });

@@ -2,6 +2,7 @@ package com.tec.zhang.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +11,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.tec.zhang.R;
+
+import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.ContentValues.TAG;
+
 /**
  * Created by zhang on 2017/1/21.
  */
@@ -31,40 +37,64 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
 
     @Override
     public void onBindViewHolder(final ItemViewHolder holder, final int position) {
-        ProjItem i = projectList.get(position);
-        Picasso.with(mContext)
-                .load(i.imageView)
-                .resizeDimen(R.dimen.kuan,R.dimen.gao)
-                .into(holder.cir);
-        holder.fullName.setText(i.fullNme);
-        holder.state.setText(i.state);
-        String man = null;
-        if (i.orderMan.contains("，")) {
-            man = i.orderMan.substring(i.orderMan.lastIndexOf("，") + 1);
-        } else {
-            man = i.orderMan;
-        }
-        holder.orderMan.setText(man);
-        if (listener !=null){
-           holder.layout.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View v) {
-                   listener.onClick(holder.layout,position);
-               }
-           });
+        if (projectList !=null) {
+            ProjItem i = projectList.get(position);
+            Picasso.with(mContext)
+                    .load(i.imageView)
+                    .resizeDimen(R.dimen.kuan,R.dimen.gao)
+                    .into(holder.cir);
+            holder.fullName.setText(i.fullNme);
+            holder.state.setText(i.state);
+            String man = null;
+            if (i.orderMan.contains("，")) {
+                man = i.orderMan.substring(i.orderMan.lastIndexOf("，") + 1);
+            } else {
+                man = i.orderMan;
+            }
+            holder.orderMan.setText(man);
+            final String finalMan = man;
+            holder.orderMan.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null){
+                        listener.onOrderManClick(holder.orderMan,position);
+                    }
+                    /*List<ProjItem> personalList = new ArrayList<>();
+                    for (ProjItem item : projectList){
+                        if (item.orderMan.equals(finalMan)){
+                            personalList.add(item);
+                        }
+                    }
+                    if (!personalList.isEmpty()){
+                        projectList.clear();
+                        for (ProjItem item : personalList){
+                            projectList.add(item);
+                        }
+                        ItemAdapter.this.notifyDataSetChanged();
+                    }*/
+                }
+            });
+            if (listener !=null){
+               holder.layout.setOnClickListener(new View.OnClickListener() {
+                   @Override
+                   public void onClick(View v) {
+                       listener.onClick(holder.layout,position);
+                   }
+               });
+            }
         }
     }
     @Override
     public int getItemCount() {
         return projectList.size();
     }
-    public  class ItemViewHolder extends RecyclerView.ViewHolder{
+    class ItemViewHolder extends RecyclerView.ViewHolder{
         LinearLayout layout;
         ImageView cir;
         TextView fullName;
         TextView state;
         TextView orderMan;
-        public ItemViewHolder(View view){
+        ItemViewHolder(View view){
             super(view);
             layout = (LinearLayout) view.findViewById(R.id.linear_layout_rec);
             cir = (ImageView) view.findViewById(R.id.circle_image);
@@ -86,6 +116,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
     }
     public interface OnItemClickListener{
         void  onClick(View v, int position);
-
+        void onOrderManClick(TextView textView, int position);
     }
 }

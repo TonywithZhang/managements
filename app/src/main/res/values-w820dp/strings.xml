@@ -10,4 +10,9 @@
     <string name="fill_in_project_master">请输入项目主管名字（不能出现错字）</string>
     <string name="project_master">项目主管</string>
     <string name="detail">检具详情</string>
+    <string name="fullName">全名</string>
+    <string name="stateNow">状态：</string>
+    <string name="profullName">全名</string>
+    <string name="orderMan">当前负责人：</string>
+    <string name="fackOrderMan">（负责人）</string>
 </resources>
