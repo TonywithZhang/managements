@@ -181,7 +181,7 @@ public class LoginActivity extends BaseActivity {
                         if (jo.getString("state").equals("1")){
                             Log.d(TAG, jo.getString("realName")+"登录成功");
                             AccountData lastOne = DataSupport.findLast(AccountData.class);
-                            if (!(lastOne.getName().equals(account)&&lastOne.getPassword().
+                            if ((lastOne ==null) || !(lastOne.getName().equals(account)&&lastOne.getPassword().
                                     equals(pass)&&lastOne.
                                     getAccountRight() == Integer.parseInt(jo.getString("right") ))){
                                 AccountData ad = new AccountData();

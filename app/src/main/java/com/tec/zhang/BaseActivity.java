@@ -97,6 +97,7 @@ public class BaseActivity extends AppCompatActivity {
         ActivityManager manager = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo info: manager.getRunningServices(Integer.MAX_VALUE)) {
             if ("com.tec.zhang.CheckNews".equals(info.service.getClassName())){
+                Log.d(TAG, "isServiceRunning: 后台服务正在运行中");
                 return true;
             }
         }

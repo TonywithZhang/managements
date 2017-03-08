@@ -19,6 +19,9 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -30,12 +33,12 @@ import static android.content.ContentValues.TAG;
 
 public class CheckNews extends Service {
     private OkHttpClient client;
-    public CheckNews() {
-    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        new Thread(new Runnable() {
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.scheduleWithFixedDelay(runnable,20,20, TimeUnit.SECONDS);
+        /*new Thread(new Runnable() {
             @Override
             public void run() {
                 while (true) {
@@ -143,13 +146,126 @@ public class CheckNews extends Service {
                     }
                 }
             }
-        }).start();
+        }).start();*/
         return super.onStartCommand(intent, flags, startId);
     }
-
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            Log.d(TAG, "run: 后台服务轮询任务执行了一次");
+            client = new OkHttpClient();
+            Request request = new Request.Builder().get().url(BaseActivity.SERVER_ADDRESS + "checkNews").build();
+            Call call = client.newCall(request);
+            call.enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+                @Override
+                public void onResponse(Call call, Response response) throws IOException{
+                    String callBack = URLDecoder.decode(response.body().string(),"GBK");
+                    try {
+                        JSONObject jo = new JSONObject(callBack);
+                        JSONArray ja =jo.getJSONArray("LatestDatas");
+                        AccountData ad = DataSupport.findLast(AccountData.class);
+                        if (ad != null){
+                            String att = ad.getRealName();
+                            List<MyTasks> lmt = DataSupport.where("stateCode < ?","10").find(MyTasks.class);
+                            if (lmt != null){
+                                List<String> numbers = new ArrayList<>();
+                                List<String> codes = new ArrayList<>();
+                                for (MyTasks m:lmt) {
+                                    numbers.add(m.getProjNum());
+                                    codes.add(m.getTaskCode());
+                                }
+                                for (int i = 0 ; i< ja.length();i++){
+                                    JSONObject jo1 = ja.getJSONObject(i);
+                                    String a = jo1.getString("projNum");
+                                    String b= jo1.getString("stateCode");
+                                    String[] attendNames = jo1.getString("attendNames").split("，");
+                                    for (String string:attendNames
+                                            ) {
+                                        Log.d(TAG, "onResponse: " + string);
+                                    }
+                                    String orderMan = attendNames[attendNames.length -1];
+                                    Log.d(TAG, "onResponse:" + orderMan);
+                                    if (att.equals(orderMan)) {
+                                        if (!numbers.contains(a)){
+                                            MyTasks my = new MyTasks();
+                                            my.setProjNum(a);
+                                            my.setTaskCode(b);
+                                            my.setStateCode(1);
+                                            my.setReceiveTime(System.currentTimeMillis());
+                                            my.save();
+                                            noticeUser(a,b);
+                                        }else{
+                                            int count = 0;
+                                            for (int j = 0;j<codes.size();j++) {
+                                                if(a.equals(numbers.get(j))){
+                                                    if (b.equals(codes.get(j))){count++;}
+                                                }
+                                            }
+                                            if(count == 0){
+                                                MyTasks my = new MyTasks();
+                                                my.setProjNum(a);
+                                                my.setTaskCode(b);
+                                                my.setStateCode(1);
+                                                my.setReceiveTime(System.currentTimeMillis());
+                                                my.save();
+                                                noticeUser(a,b);
+                                            }
+                                        }
+                                    } else {
+                                        if (jo1.getString("attendNames").contains(att)){
+                                            if (!numbers.contains(a)){
+                                                MyTasks my = new MyTasks();
+                                                my.setProjNum(a);
+                                                my.setTaskCode(b);
+                                                my.setStateCode(1);
+                                                my.save();
+                                                Log.d(TAG, "包含名字但是不包含项目号");
+                                                noticeComponent(a,b);
+                                            }else{
+                                                int count = 0;
+                                                for (int j = 0;j<codes.size();j++) {
+                                                    if(a.equals(numbers.get(j))){
+                                                        if (b.equals(codes.get(j))){count++;}
+                                                    }
+                                                }
+                                                if (count ==0){
+                                                    MyTasks my = new MyTasks();
+                                                    my.setProjNum(a);
+                                                    my.setTaskCode(b);
+                                                    my.setStateCode(1);
+                                                    my.save();
+                                                    Log.d(TAG, "包含名字和项目号但是状态码不对");
+                                                    noticeComponent(a,b);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch(NullPointerException e){
+                        e.printStackTrace();
+                    }
+                }
+            });
+            try {
+                Thread.sleep(20000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (client != null){
+                client = null;
+            }
+        }
+    };
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
     public  void noticeComponent(String projNum,String code){

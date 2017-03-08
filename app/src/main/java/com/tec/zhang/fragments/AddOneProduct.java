@@ -122,6 +122,7 @@ public class AddOneProduct extends Fragment {
                 String name = account.getName();
                 String a = gaugeNum.getText().toString();
                 String b = gaugeFullName.getText().toString();
+                //String frontFive = b.substring()
                 String c = gaugePro.getText().toString();
                 String d = Projectdetails.getNameCode(managerName.getText().toString());
                 String e = spinner.getSelectedItemPosition() + 1 + "";

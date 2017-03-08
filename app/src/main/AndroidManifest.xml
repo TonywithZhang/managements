@@ -20,23 +20,23 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".welcome"
+        <activity
+            android:name=".welcome"
             android:theme="@style/Theme.AppCompat.NoActionBar">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity"
+        <activity
+            android:name=".LoginActivity"
             android:label="@string/login"
             android:logo="@drawable/ic_account_box_pink_800_48dp"
-            android:theme="@style/AppTheme.AnimationTheme"
-            />
-        <activity android:name=".Transaction"
-            android:theme="@style/AppTheme.MyownStyle"
-            />
+            android:theme="@style/AppTheme.AnimationTheme" />
+        <activity
+            android:name=".Transaction"
+            android:theme="@style/AppTheme.MyownStyle" />
 
         <receiver
             android:name=".MyReceiver"
@@ -52,13 +52,24 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".Projectdetails"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:label="@string/detail"/>
+        <activity
+            android:name=".Projectdetails"
+            android:label="@string/detail"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".CreateSingleProject" />
         <activity android:name=".PointingMaster" />
         <activity android:name=".SeekSingle" />
-        <activity android:name=".SimpleDisplay"/>
+        <activity android:name=".SimpleDisplay" />
+
+        <receiver
+            android:name=".CheckNewsReceiver"
+            android:enabled="true"
+            android:process=":remote"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.tec.zhang.alarm"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
