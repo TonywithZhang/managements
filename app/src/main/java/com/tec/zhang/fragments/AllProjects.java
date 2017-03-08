@@ -42,6 +42,7 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.dmoral.toasty.Toasty;
+import jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -56,7 +57,7 @@ public class AllProjects extends Fragment {
     private Context mcontext;
     private OkHttpClient client = new OkHttpClient();
     public ItemAdapter adapter;
-    private SwipeRefreshLayout srl;
+    private WaveSwipeRefreshLayout srl;
     private ProgressBar progressBar;
     private List<ProjItem> datas=new ArrayList<>();
     private static final String TAG= "Transaction";
@@ -108,9 +109,9 @@ public class AllProjects extends Fragment {
                 }
             }
         });
-        srl = (SwipeRefreshLayout) view.findViewById(R.id.srl);
-        srl.setColorSchemeColors(ContextCompat.getColor(getContext(),R.color.colorAccent));
-        srl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
+        srl = (WaveSwipeRefreshLayout) view.findViewById(R.id.srl);
+        srl.setColorSchemeColors(ContextCompat.getColor(getContext(),R.color.colorPrimary),ContextCompat.getColor(getContext(),R.color.colorPrimaryDark));
+        srl.setOnRefreshListener(new WaveSwipeRefreshLayout.OnRefreshListener(){
             @Override
             public void onRefresh() {
                 showAll();
