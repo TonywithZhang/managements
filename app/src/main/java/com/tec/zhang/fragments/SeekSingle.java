@@ -21,6 +21,7 @@ import com.tec.zhang.SimpleDisplay;
 
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.regex.Pattern;
 
 import es.dmoral.toasty.Toasty;
 import okhttp3.Call;
@@ -51,6 +52,11 @@ public class SeekSingle extends Fragment {
             @Override
             public void onClick(View v) {
                 try {
+                    String firstFive = projNum.getText().toString();
+                    if (!Pattern.compile("\\d{5}").matcher(firstFive).matches()){
+                        Toasty.error(getActivity(),"输入错误，请确认输入是五位数字",Toast.LENGTH_LONG).show();
+                        return;
+                    }
                     new ShowDetail().execute(Integer.parseInt(projNum.getText().toString()));
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
@@ -104,8 +110,7 @@ public class SeekSingle extends Fragment {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     String respond = response.body().string();
-                    final String s = URLDecoder.decode(respond, "GBK");
-                    projDetail = s;
+                    projDetail = URLDecoder.decode(respond, "GBK");
                     state[0] = true;
                 }
             });

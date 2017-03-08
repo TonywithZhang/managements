@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -153,7 +154,7 @@ public class AddOneProduct extends Fragment {
                                     Toasty.success(getContext(),"创建成功",Toast.LENGTH_LONG).show();
                                 }
                             });
-                            getActivity().finish();
+                            //FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                         }else{
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
