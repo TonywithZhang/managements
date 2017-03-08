@@ -25,6 +25,7 @@ import com.tec.zhang.R;
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import es.dmoral.toasty.Toasty;
 import okhttp3.Call;
@@ -122,7 +123,12 @@ public class AddOneProduct extends Fragment {
                 String name = account.getName();
                 String a = gaugeNum.getText().toString();
                 String b = gaugeFullName.getText().toString();
-                //String frontFive = b.substring()
+                String frontFive = b.substring(0,5);
+                Pattern pattern = Pattern.compile("\\d{5}");
+                if (!pattern.matcher(frontFive).matches()){
+                    Toasty.error(getActivity(),"输入错误，请确认项目全名前五位是数字！",Toast.LENGTH_LONG).show();
+                    return;
+                }
                 String c = gaugePro.getText().toString();
                 String d = Projectdetails.getNameCode(managerName.getText().toString());
                 String e = spinner.getSelectedItemPosition() + 1 + "";
